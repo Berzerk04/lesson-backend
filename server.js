@@ -1,14 +1,20 @@
 const express = require('express'); // Import Express
+const mongoose = require('mongoose'); // Import Mongoose for MongoDB connection
 const morgan = require('morgan'); // Import Morgan for logging
 const path = require('path'); // Import the path module
 const app = express(); // Initialize Express
-const PORT = 3000; // Define a port for the server
+const PORT = process.env.PORT || 3000; // Use environment PORT or default to 3000
 
 // Middleware
 app.use(morgan('dev')); // Logger middleware
 app.use(express.json()); // Body parser middleware to parse JSON request bodies
 app.use('/images', express.static(path.join(__dirname, 'public/images'))); // Static file middleware to serve images
 app.use('/images', (req, res) => res.status(404).json({ error: 'Image not found' })); // Error handling for missing images
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Could not connect to MongoDB:', err));
 
 // Sample lessons data (in-memory array for demonstration)
 let lessons = [
