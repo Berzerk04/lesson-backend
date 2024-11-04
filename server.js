@@ -43,6 +43,27 @@ app.post('/orders', (req, res) => {
   }
 });
 
+// PUT /lessons/:id route to update a lesson's attributes (Part C)
+app.put('/lessons/:id', (req, res) => {
+  const lessonId = parseInt(req.params.id); // Get the lesson ID from the route
+  const lesson = lessons.find((l) => l.id === lessonId); // Find the lesson by ID
+
+  if (!lesson) {
+    // If lesson is not found, respond with an error
+    return res.status(404).json({ error: 'Lesson not found' });
+  }
+
+  // Update lesson attributes based on the request body
+  const { topic, location, price, space } = req.body;
+
+  if (topic !== undefined) lesson.topic = topic;
+  if (location !== undefined) lesson.location = location;
+  if (price !== undefined) lesson.price = price;
+  if (space !== undefined) lesson.space = space;
+
+  res.json(lesson); // Respond with the updated lesson
+});
+
 // Basic route to check if server is running
 app.get('/', (req, res) => {
   res.send('Server is running');
