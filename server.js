@@ -1,9 +1,12 @@
-const express = require('express'); // Import Express
-const mongoose = require('mongoose'); // Import Mongoose for MongoDB connection
-const morgan = require('morgan'); // Import Morgan for logging
-const path = require('path'); // Import the path module
-const app = express(); // Initialize Express
-const PORT = process.env.PORT || 3000; // Use environment PORT or default to 3000
+require('dotenv').config();
+console.log('MONGO_URI:', process.env.MONGO_URI); // Debugging line
+
+const express = require('express');
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(morgan('dev')); // Logger middleware
