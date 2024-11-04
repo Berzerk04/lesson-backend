@@ -1,19 +1,26 @@
 const express = require('express'); // Import Express
 const morgan = require('morgan'); // Import Morgan for logging
-const path = require('path'); // Import Path module to work with file paths
-
+const path = require('path'); // Import the path module
 const app = express(); // Initialize Express
 const PORT = 3000; // Define a port for the server
 
-// Logger Middleware - logs each request to the console
-app.use(morgan('dev'));
+// Middleware
+app.use(morgan('dev')); // Logger middleware
+app.use(express.json()); // Body parser middleware
+app.use('/images', express.static(path.join(__dirname, 'public/images'))); // Static file middleware
+app.use('/images', (req, res) => res.status(404).json({ error: 'Image not found' })); // Error handling for missing images
 
-// Static File Middleware - serves files from the 'public/images' directory
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+// Sample lessons data (in-memory array for demonstration)
+let lessons = [
+  { id: 1, topic: 'math', location: 'Hendon', price: 100, space: 5 },
+  { id: 2, topic: 'math', location: 'Colindale', price: 80, space: 2 },
+  { id: 3, topic: 'math', location: 'Brent Cross', price: 90, space: 6 },
+  { id: 4, topic: 'math', location: 'Golders Green', price: 95, space: 7 }
+];
 
-// Error Handling for Missing Images - returns a 404 error if an image is not found
-app.use('/images', (req, res) => {
-  res.status(404).json({ error: 'Image not found' });
+// GET /lessons route to return all lessons as JSON (Part A)
+app.get('/lessons', (req, res) => {
+  res.json(lessons);
 });
 
 // Basic route to check if server is running
