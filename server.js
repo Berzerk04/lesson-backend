@@ -51,7 +51,13 @@ app.get('/lessons', async (req, res) => {
 
 // POST /orders route to create a new order
 app.post('/orders', async (req, res) => {
+  console.log("Request Body:", req.body); // Debugging line to print request body
+
   const { name, phone, lessonIDs, space } = req.body;
+
+  if (!Array.isArray(lessonIDs)) {
+    return res.status(400).json({ error: "lessonIDs must be an array" });
+  }
 
   try {
     // Check if enough space is available for each lesson in the order
@@ -81,6 +87,7 @@ app.post('/orders', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // PUT /lessons/:id route to update a lesson's attributes in MongoDB
 app.put('/lessons/:id', async (req, res) => {
