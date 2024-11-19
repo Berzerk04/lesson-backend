@@ -21,7 +21,7 @@ let db; // Global variable to hold the database connection
 // Establish connection to MongoDB Atlas
 MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((client) => {
-    db = client.db('lessonApp'); // Specify the database name
+    db = client.db('lessonApp'); // Database name
     console.log('Connected to MongoDB Atlas');
   })
   .catch((error) => console.error('Could not connect to MongoDB Atlas:', error));
