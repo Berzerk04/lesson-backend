@@ -15,6 +15,9 @@ const PORT = process.env.PORT || 3000; // Use the port from environment variable
 const uri = process.env.MONGO_URI;
 let db; // Global variable to hold the database connection
 
+const cors = require('cors'); // Import cors
+app.use(cors()); // Enable CORS for cross-origin requests
+
 // Establish connection to MongoDB Atlas
 MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((client) => {
@@ -44,10 +47,10 @@ app.get('/lessons', async (req, res) => {
     res.status(500).json({ message: err.message }); // Handle server errors
   }
 });
-app.get('/orders', async (req, res) => {
+app.get('/lessons', async (req, res) => {
   try {
-    const orders = await db.collection('orders').find().toArray(); // Fetch all lessons
-    res.json(orders); // Respond with the lessons array
+    const lessons = await db.collection('lessons').find().toArray(); // Fetch all lessons
+    res.json(lessons); // Respond with the lessons array
   } catch (err) {
     res.status(500).json({ message: err.message }); // Handle server errors
   }
@@ -57,7 +60,7 @@ app.get('/orders', async (req, res) => {
  * Route: POST /orders
  * Purpose: Create a new order for lessons
  */
-app.post('orders', async (req, res) => {
+app.post('/orders', async (req, res) => {
   try {
     const { firstName, lastName, phone, cart } = req.body;
 
@@ -106,7 +109,7 @@ app.post('orders', async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-});
+}); 
 
 /**
  * Route: PUT /lessons/:id
