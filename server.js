@@ -57,13 +57,12 @@ app.get('/orders', async (req, res) => {
  * Route: POST /orders
  * Purpose: Create a new order for lessons
  */
-app.post('/orders', async (req, res) => {
+app.post('/api/orders', async (req, res) => {
   try {
     const { firstName, lastName, phone, cart } = req.body;
 
     // Validate input
     if (!firstName || !lastName || !phone || !cart || !Array.isArray(cart)) {
-      console.error("Invalid order data:", req.body);  // Log invalid data for debugging
       return res.status(400).json({ error: 'Invalid order data' });
     }
 
@@ -76,12 +75,10 @@ app.post('/orders', async (req, res) => {
       const lesson = await db.collection('lessons').findOne({ _id: new ObjectId(item.id) });
 
       if (!lesson) {
-        console.error(`Lesson with ID ${item.id} not found`); // Log missing lessons
         return res.status(404).json({ error: `Lesson with ID ${item.id} not found` });
       }
 
       if (lesson.space < 1) {
-        console.error(`Not enough spaces for lesson ${lesson.topic}`); // Log space issue
         return res.status(400).json({ error: `Not enough spaces available for lesson ${lesson.topic}` });
       }
 
@@ -105,10 +102,8 @@ app.post('/orders', async (req, res) => {
     // Insert the order into the database
     const result = await db.collection('orders').insertOne(order);
 
-    console.log('Order created:', result.ops[0]); // Log created order for debugging
     res.status(201).json({ message: 'Order created successfully', order: result.ops[0] });
   } catch (err) {
-    console.error('Error processing order:', err); // Log error for debugging
     res.status(500).json({ message: err.message });
   }
 });
