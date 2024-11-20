@@ -57,7 +57,7 @@ app.get('/orders', async (req, res) => {
  * Route: POST /orders
  * Purpose: Create a new order for lessons
  */
-app.post('/api/orders', async (req, res) => {
+app.post('orders', async (req, res) => {
   try {
     const { firstName, lastName, phone, cart } = req.body;
 
