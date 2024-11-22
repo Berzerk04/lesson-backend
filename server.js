@@ -6,17 +6,15 @@ const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb'); // Native MongoDB driver
 const morgan = require('morgan'); // HTTP request logger middleware
 const path = require('path'); // Node.js module for handling file paths
+const cors = require('cors'); // Import cors
 
 // Create an Express application
 const app = express();
-const PORT = process.env.PORT || 3000; // Use the port from environment variables or default to 5000
+const PORT = process.env.PORT || 3000; // Use the port from environment variables or default to 3000
 
 // MongoDB Atlas URI from environment variables
 const uri = process.env.MONGO_URI;
 let db; // Global variable to hold the database connection
-
-const cors = require('cors'); // Import cors
-app.use(cors()); // Enable CORS for cross-origin requests
 
 // Establish connection to MongoDB Atlas
 MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -27,6 +25,7 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .catch((error) => console.error('Could not connect to MongoDB Atlas:', error));
 
 // Middleware setup
+app.use(cors()); // Enable CORS for cross-origin requests
 app.use(morgan('dev')); // Logs incoming requests for easier debugging
 app.use(express.json()); // Parses incoming JSON requests and makes them available in `req.body`
 
@@ -39,14 +38,6 @@ app.use('/images', express.static(path.join(__dirname, 'public/images')));
  * Route: GET /lessons
  * Purpose: Retrieve all lessons from the database
  */
-app.get('/lessons', async (req, res) => {
-  try {
-    const lessons = await db.collection('lessons').find().toArray(); // Fetch all lessons
-    res.json(lessons); // Respond with the lessons array
-  } catch (err) {
-    res.status(500).json({ message: err.message }); // Handle server errors
-  }
-});
 app.get('/lessons', async (req, res) => {
   try {
     const lessons = await db.collection('lessons').find().toArray(); // Fetch all lessons
@@ -105,11 +96,27 @@ app.post('/orders', async (req, res) => {
     // Insert the order into the database
     const result = await db.collection('orders').insertOne(order);
 
-    res.status(201).json({ message: 'Order created successfully', order: result.ops[0] });
+    // Return success response
+    res.status(201).json({ message: 'Order created successfully', orderId: result.insertedId });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err); // Log error for debugging
+    res.status(500).json({ message: 'Internal server error' });
   }
-}); 
+});
+
+/**
+ * Route: GET /orders
+ * Purpose: Retrieve all orders from the database
+ */
+app.get('/orders', async (req, res) => {
+  try {
+    const orders = await db.collection('orders').find().toArray(); // Fetch all orders
+    res.json(orders); // Respond with the orders array
+  } catch (err) {
+    console.error(err); // Log error for debugging
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 /**
  * Route: PUT /lessons/:id
